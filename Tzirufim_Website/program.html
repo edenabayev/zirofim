@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>צירופים — תוכנייה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- GSAP & ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<style>
+  :root {
+    --bg-light: #fdfbf8;
+    --text-dark: #421218;
+    --bg-dark: #2a0b10;
+    --text-light: #fdfbf8;
+    --accent: #e0cfc0;
+    --aura-color: rgba(187, 250, 241, 0.25); /* תכלת/טורקיז ניגודי זוהר */
+    --row-bg: rgba(66, 18, 24, 0.03);
+    --row-bg-hover: rgba(66, 18, 24, 0.08);
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* פאנל עליון */
+  .marquee-wrapper {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    background: var(--accent);
+    color: var(--text-dark);
+    padding: 0.8rem 0;
+    z-index: 9999;
+    border-bottom: 2px solid var(--text-dark);
+    overflow: hidden;
+  }
+  .marquee {
+    white-space: nowrap;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .schedule-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .day-section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    /* ריפוד מוגדל בתחתית למניעת חיתוך ופתיחת מרחב גלילה בטוח */
+    padding: 15vh 4vw 55vh; 
+    overflow: visible; /* מאפשר לתלת-מימד לעבוד בלי שיטוח דפדפן */
+    perspective: 1500px;
+  }
+
+  .day-content-inner {
+    transform-style: preserve-3d;
+    max-width: 850px;
+    margin: 0 auto;
+  }
+
+  /* ─────────────────────────────────────────
+     INTRO HERO (מסך פתיחה)
+  ───────────────────────────────────────── */
+  #intro-hero {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    background: #421218; /* רקע אדמה כהה של הלוגו */
+    color: #fdfbf8; /* טקסט לבן */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .intro-hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transform-style: preserve-3d;
+    position: relative;
+    z-index: 2;
+  }
+
+  .intro-hero-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 0.85;
+    margin: 0;
+  }
+
+  .title-top {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 7rem;
+    font-weight: 900; /* משקל כבד */
+    letter-spacing: 0.02em;
+  }
+
+  .title-bottom {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 6.5rem;
+    font-weight: 300; /* משקל דק קונטרסטי */
+    letter-spacing: 0.05em;
+  }
+
+  /* רקע גיאומטרי זז בגלילה */
+  .intro-geo-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vh;
+    height: 80vh;
+    opacity: 0.08; /* שימוש מינימלי ומגניב */
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .intro-geo-bg svg {
+    width: 100%;
+    height: 100%;
+    stroke: #bbfaf1; /* תורכיז ניגודי זוהר */
+    fill: none;
+    stroke-width: 1px;
+  }
+
+  /* מחוון גלילה טורקיז זוהר */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 5vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    z-index: 3;
+  }
+
+  .scroll-indicator-text {
+    font-family: 'Heebo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #fdfbf8;
+    opacity: 0.6;
+    letter-spacing: 0.08em;
+  }
+
+  .scroll-indicator-line {
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(to bottom, #bbfaf1 50%, transparent 50%);
+    background-size: 100% 200%;
+    animation: scroll-flow 2s infinite ease-in-out;
+  }
+
+  @keyframes scroll-flow {
+    0% { background-position: 0 100%; }
+    50% { background-position: 0 0; }
+    100% { background-position: 0 -100%; }
+  }
+
+  /* נגיעות טורקיז מינימליות בכרטיסיות */
+  .meta-bullet {
+    color: #bbfaf1;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(187, 250, 241, 0.7);
+    opacity: 0.9;
+  }
+  
+  /* כרטיס שיא מקבל גבול ימני תורכיז זוהר */
+  .event-item.peak-event {
+    border-right-color: #bbfaf1;
+    box-shadow: 0 15px 35px rgba(187, 250, 241, 0.03), 0 0 15px rgba(187, 250, 241, 0.05);
+  }
+
+  #day-0 {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    position: sticky;
+    top: 0;
+    z-index: 2; /* זז למעלה כדי לכסות את מסך הפתיחה */
+  }
+
+  #day-1 {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    z-index: 3;
+    box-shadow: 0 -30px 60px rgba(0,0,0,0.4);
+    background-image: 
+      radial-gradient(circle at center, transparent 40%, rgba(224, 207, 192, 0.08) 41%, transparent 42%),
+      linear-gradient(rgba(224, 207, 192, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(224, 207, 192, 0.05) 1px, transparent 1px);
+    background-size: 300px 300px, 50px 50px, 50px 50px;
+    --row-bg: rgba(253, 251, 248, 0.04);
+    --row-bg-hover: rgba(253, 251, 248, 0.09);
+  }
+
+  #day-2 {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    z-index: 4;
+    box-shadow: 0 -30px 60px rgba(0,0,0,0.1);
+    padding-bottom: 85vh; /* מרווח מוגדל למניעת תקיעה ביום האחרון */
+  }
+
+  .day-header {
+    font-family: 'Frank Ruhl Libre', serif;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 6rem;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 1.5rem;
+  }
+
+  .day-header-label {
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500; /* משקל מופחת */
+    opacity: 0.6;
+  }
+
+  .day-header-title {
+    font-size: 4.5rem;
+    font-weight: 300; /* משקל עדין ואלגנטי במיוחד בהתאם להיררכיה */
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  /* פריט בלו"ז */
+  .event-item {
+    margin-bottom: 6rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 2.2rem 2.5rem;
+    background: var(--row-bg);
+    border-right: 6px solid currentColor;
+    border-radius: 0 16px 16px 0;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
+    transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+
+  .event-item:hover {
+    background: var(--row-bg-hover);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.06);
+  }
+
+  /* כשהאלמנט האחרון לא צריך שוליים תחתונים גדולים אלא מרווח מהקצה שמוגדר כבר ב-day-section */
+  .event-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .event-item.peak-event::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--aura-color) 0%, transparent 60%);
+    z-index: -1;
+    pointer-events: none;
+    filter: blur(40px);
+    mix-blend-mode: screen;
+  }
+
+  .event-meta {
+    font-size: 1.15rem;
+    font-weight: 400; /* משקל מופחת */
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    opacity: 0.8;
+  }
+
+  .event-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .event-index {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 5.5rem;
+    line-height: 0.7;
+    font-weight: 300;
+    -webkit-text-stroke: 1px currentColor;
+    color: transparent;
+    transition: color 0.6s ease;
+  }
+
+  .event-index.filled {
+    color: currentColor;
+  }
+
+  .event-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.7rem;
+    line-height: 0.95; /* גובה שורה צפוף ומתוחכם יותר לכותרות ארוכות */
+    margin: 0;
+    font-weight: 300; /* משקל מופחת */
+    text-transform: uppercase;
+  }
+
+  .event-speaker {
+    font-size: 1.4rem;
+    margin-top: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+  }
+
+  .fab-button {
+    position: fixed;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(253, 251, 248, 0.7); /* רקע שקוף למחצה */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--text-dark); /* טקסט חום */
+    border: 2px solid var(--text-dark); /* גבול (stroke) חום */
+    padding: 0.8rem 3rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 500; /* משקל עדין יותר */
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(66, 18, 24, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: all 0.3s ease, opacity 0.4s ease;
+    opacity: 0; /* מוסתר בהתחלה */
+    pointer-events: none;
+  }
+
+  .fab-button:hover {
+    background: var(--text-dark);
+    color: var(--bg-light);
+    box-shadow: 0 12px 35px rgba(66, 18, 24, 0.2);
+  }
+
+  /* התאמות למובייל */
+  @media (max-width: 768px) {
+    .day-section {
+      padding-bottom: 30vh;
+    }
+
+    .day-header {
+      margin-bottom: 3rem;
+    }
+
+    .day-header-label {
+      font-size: 1rem;
+    }
+
+    .day-header-title {
+      font-size: 3rem;
+    }
+
+    .title-top {
+      font-size: 4rem;
+    }
+
+    .title-bottom {
+      font-size: 3.6rem;
+    }
+
+    .intro-geo-bg {
+      width: 60vh;
+      height: 60vh;
+    }
+
+    .scroll-indicator {
+      bottom: 6vh;
+    }
+
+    .scroll-indicator-line {
+      height: 35px;
+    }
+
+    .event-item {
+      margin-bottom: 4rem;
+      padding: 1.2rem 1.5rem;
+      border-right-width: 4px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .event-meta {
+      font-size: 1rem;
+    }
+
+    .event-main {
+      gap: 1rem;
+    }
+
+    .event-index {
+      font-size: 4rem;
+    }
+
+    .event-title {
+      font-size: 1.6rem;
+    }
+
+    .event-speaker {
+      font-size: 1.05rem;
+    }
+
+    .fab-button {
+      padding: 0.7rem 2.2rem;
+      font-size: 0.9rem;
+      bottom: 2rem;
+    }
+
+    .event-item.peak-event::before {
+      width: 300px;
+      height: 300px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+  <div class="marquee-wrapper">
+    <div class="marquee">
+      צירופים ✺ פסטיבל יער ✺ התבודדות ✺ התבוננות ✺ ניגון ✺ צירופים ✺ פסטיבל יער ✺ התבודדות ✺ התבוננות ✺ ניגון
+    </div>
+  </div>
+
+  <div class="schedule-wrapper" id="schedule-container">
+    <!-- מסך פתיחה (Layer 0) -->
+    <div id="intro-hero">
+      <!-- רקע גיאומטרי קבלי מסתובב -->
+      <div class="intro-geo-bg">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="95" stroke-dasharray="2 2" />
+          <circle cx="100" cy="100" r="80" />
+          <circle cx="100" cy="100" r="60" />
+          <circle cx="100" cy="100" r="40" stroke-dasharray="6 3" />
+          <circle cx="100" cy="100" r="20" />
+          <line x1="100" y1="5" x2="100" y2="195" />
+          <line x1="5" y1="100" x2="195" y2="100" />
+          <line x1="33" y1="33" x2="167" y2="167" />
+          <line x1="33" y1="167" x2="167" y2="33" />
+          <polygon points="100,20 180,100 100,180 20,100" />
+          <polygon points="100,40 160,100 100,160 40,100" stroke-dasharray="1 1" />
+        </svg>
+      </div>
+      <div class="intro-hero-inner">
+        <h1 class="intro-hero-title">
+          <span class="title-top">לוח</span>
+          <span class="title-bottom">צירופים</span>
+        </h1>
+      </div>
+      <div class="scroll-indicator">
+        <span class="scroll-indicator-text">גלול</span>
+        <div class="scroll-indicator-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="fab-button">הרשמה לפסטיבל</button>
+
+  <script src="events.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. הזרקת הנתונים ל-DOM
+      const container = document.getElementById('schedule-container');
+      
+      if (!window.festivalData) {
+        container.innerHTML = '<h1 style="text-align:center; margin-top:20vh;">שגיאה: events.js לא נטען</h1>';
+        return;
+      }
+
+      let eventCounter = 1;
+      
+      window.festivalData.days.forEach((day, index) => {
+        let html = `
+          <div class="day-section" id="day-${index}">
+            <div class="day-content-inner">
+              <div class="day-header">
+                <div class="day-header-label">DAY ${index + 1}</div>
+                <div class="day-header-title">${day.day_title}</div>
+              </div>
+        `;
+        
+        day.events.forEach(ev => {
+          let num = eventCounter < 10 ? '0' + eventCounter : eventCounter;
+          const isPeak = (index === 1 && ev.space_ring === 'טראנס') || ev.title.includes('במה') ? 'peak-event' : '';
+          
+          html += `
+            <div class="event-item ${isPeak}">
+              <div class="event-meta">
+                <span>${ev.time_clock}</span> 
+                <span class="meta-bullet">◇</span> 
+                <span>${ev.time_ring}</span>
+              </div>
+              <div class="event-main">
+                <div class="event-index">${num}</div>
+                <div class="event-content">
+                  <h2 class="event-title">${ev.title}</h2>
+                  ${ev.speaker ? `<div class="event-speaker">FT. ${ev.speaker}</div>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+          eventCounter++;
+        });
+        
+        html += `
+            </div>
+          </div>
+        `;
+        container.innerHTML += html;
+      });
+
+      // 2. הפעלת GSAP תלת מימדי
+      gsap.registerPlugin(ScrollTrigger);
+
+      // פרלקס למסך הפתיחה (Layer 0)
+      gsap.to("#intro-hero .intro-hero-inner", {
+        yPercent: 20,
+        opacity: 0.1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#intro-hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true
+        }
+      });
+
+      // סיבוב וגדילה של הרקע הגיאומטרי בגלילה
+      gsap.to("#intro-hero .intro-geo-bg", {
+        rotation: 120,
+        scale: 1.35,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#intro-hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true
+        }
+      });
+
+      // הופעת כפתור ההרשמה רק לאחר מעבר מסך הפתיחה
+      ScrollTrigger.create({
+        trigger: "#day-0",
+        start: "top 80%", // מופיע כשיום 1 מתחיל לעלות
+        onEnter: () => gsap.to(".fab-button", { opacity: 1, pointerEvents: "auto", duration: 0.4 }),
+        onLeaveBack: () => gsap.to(".fab-button", { opacity: 0, pointerEvents: "none", duration: 0.4 })
+      });
+
+      // אנימציות 3D לכל פריט
+      const events = gsap.utils.toArray('.event-item');
+      events.forEach((event, i) => {
+        const isOdd = i % 2 !== 0;
+        const rotY = isOdd ? -15 : 15;
+
+        gsap.fromTo(event, 
+          { 
+            opacity: 0, 
+            y: 120, 
+            rotationX: -60, 
+            rotationY: rotY,
+            transformOrigin: "center bottom -150px" 
+          },
+          { 
+            opacity: 1, 
+            y: 0, 
+            rotationX: 0, 
+            rotationY: 0,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: event,
+              start: "top 98%", 
+              end: "top 68%", // מתיישר בזמן כדי למנוע חיתוך או היתקעות
+              scrub: 1.2
+            }
+          }
+        );
+
+        // Stroke to Fill
+        const indexEl = event.querySelector('.event-index');
+        ScrollTrigger.create({
+          trigger: event,
+          start: "top 50%", 
+          end: "bottom 30%",
+          onEnter: () => indexEl.classList.add('filled'),
+          onLeaveBack: () => indexEl.classList.remove('filled')
+        });
+      });
+
+      // פרלקס לעומק מבוקר למניעת אכילת הכרטיסים מוקדם מדי
+      gsap.to("#day-0 .day-content-inner", {
+        yPercent: 12, // מופחת מ-30 כדי שלא ייחתכו הכרטיסים
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#day-0",
+          start: "top top",
+          end: "bottom top",
+          scrub: true
+        }
+      });
+
+      gsap.to("#day-1 .day-content-inner", {
+        yPercent: 12, // מופחת מ-30 כדי שלא ייחתכו הכרטיסים
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#day-1",
+          start: "top top",
+          end: "bottom top",
+          scrub: true
+        }
+      });
+
+      // תזוזת מרקיזה
+      gsap.to(".marquee", {
+        xPercent: -50,
+        ease: "none",
+        duration: 15,
+        repeat: -1
+      });
+
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# System Files
+.DS_Store
+Thumbs.db
+
+# Backup large video files (>100MB)
+Tzirufim_Website/odot video2.mp4
+Tzirufim_Website/דף הבית 2.mp4
+Tzirufim_Website/צירוף אותיות גדול.mp4

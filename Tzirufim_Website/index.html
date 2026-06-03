@@ -12,7 +12,7 @@
 
     :root {
       --bg:       #fdfbf8;
-      --text:     #1c1c1c;
+      --text:     #421218;
       --mid:      #6a6a6a;
       --dim:      #a0a0a0;
       --accent:   #421218;
@@ -25,6 +25,111 @@
       color: var(--text);
       font-family: 'Heebo', sans-serif;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─────────────────────────────────────────
+       INTRO SPLASH SCREEN
+    ───────────────────────────────────────── */
+    .intro-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #421218;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    
+    .intro-screen.slide-up {
+      transform: translateY(-100%);
+    }
+
+    .intro-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .intro-logo-wrapper {
+      position: relative;
+      width: 180px; /* Base size */
+      height: 60px; /* Base height */
+      display: flex;
+      justify-content: center;
+    }
+    
+    .intro-logo-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      opacity: 0.15; /* Dim, initial state */
+      filter: brightness(100); /* Force white if the SVG is dark */
+    }
+
+    .intro-logo-fill {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      filter: invert(98%) sepia(1%) saturate(225%) hue-rotate(345deg) brightness(115%) contrast(97%); /* Approximation for #fdfbf8 off-white */
+      clip-path: inset(0 100% 0 0); /* Starts hidden from right to left */
+      animation: fill-stutter 2.5s ease-out forwards;
+    }
+
+    /* Fill with delays (stuttering) */
+    @keyframes fill-stutter {
+      0%   { clip-path: inset(0 100% 0 0); }
+      15%  { clip-path: inset(0 80% 0 0); }
+      25%  { clip-path: inset(0 80% 0 0); } /* pause */
+      45%  { clip-path: inset(0 40% 0 0); }
+      55%  { clip-path: inset(0 40% 0 0); } /* pause */
+      75%  { clip-path: inset(0 10% 0 0); }
+      85%  { clip-path: inset(0 10% 0 0); } /* pause */
+      100% { clip-path: inset(0 0 0 0); }   /* full */
+    }
+
+    /* Shalom Button appears after fill */
+    .intro-shalom-btn {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: #fdfbf8;
+      background: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      letter-spacing: 0.1em;
+    }
+
+    .intro-shalom-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+      animation: font-flicker 1.5s infinite;
+    }
+
+    @keyframes font-flicker {
+      0%, 100% { font-family: 'Frank Ruhl Libre', serif; }
+      25% { font-family: 'Heebo', sans-serif; }
+      50% { font-family: cursive; }
+      75% { font-family: 'Times New Roman', serif; font-style: italic; }
+    }
+
+    .intro-shalom-btn.spin {
+      animation: spin-out 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      pointer-events: none;
+    }
+
+    @keyframes spin-out {
+      0% { transform: scale(1) rotateY(0deg); opacity: 1; }
+      50% { transform: scale(1.5) rotateY(180deg); opacity: 0.5; }
+      100% { transform: scale(0) rotateY(360deg); opacity: 0; }
     }
 
     /* ─────────────────────────────────────────
@@ -49,10 +154,10 @@
       width: 100vw;
       height: 100vh;
       scroll-snap-align: start;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
       position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .slide-inner {
@@ -61,6 +166,11 @@
       padding: 4rem;
       position: relative;
       z-index: 2;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     /* ─────────────────────────────────────────
@@ -68,11 +178,21 @@
     ───────────────────────────────────────── */
     .huge-title {
       font-family: 'Frank Ruhl Libre', serif;
-      font-size: clamp(3rem, 7vw, 6rem);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
       font-weight: 300;
       line-height: 1.1;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.02em;
       margin-bottom: 1.5rem;
+    }
+    
+    #practices .huge-title, #speakers .huge-title {
+      text-align: center;
+    }
+    
+    .title-group {
+      display: inline-block;
+      max-width: 100%;
+      text-align: inherit;
     }
     
     .subtitle {
@@ -81,6 +201,16 @@
       line-height: 1.8;
       margin-bottom: 2rem;
       max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .title-group .subtitle {
+      width: 0;
+      min-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: none;
     }
     
     .subtitle span {
@@ -93,7 +223,9 @@
     }
 
     .badge {
-      display: inline-block;
+      display: block;
+      width: 100%;
+      text-align: right;
       font-size: 0.75rem;
       font-weight: 500;
       letter-spacing: 0.3em;
@@ -109,27 +241,39 @@
       0% { transform: scale(0.98); opacity: 0.9; }
       100% { transform: scale(1.03); opacity: 1; }
     }
-    .hero-logo {
-      width: min(80vw, 500px);
+    .hero-logo-wrapper {
+      width: min(90vw, 650px);
       margin-bottom: 2rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-logo {
+      width: 100%;
       animation: logoBreathe 5s infinite alternate ease-in-out;
     }
     .hero-info {
       font-size: 1rem;
       font-weight: 400;
-      color: var(--mid);
+      color: var(--text);
       letter-spacing: 0.1em;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
     }
-    .hero-info span { margin: 0 0.5rem; opacity: 0.4; }
+    .hero-info span {
+      background-color: rgba(255, 255, 255, 0.5);
+      display: inline;
+      padding: 0.2rem 0.6rem;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      border-radius: 4px;
+    }
 
     /* ─────────────────────────────────────────
        ABOUT (SLIDE 2)
     ───────────────────────────────────────── */
     #about {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
       position: relative;
       padding: 0;
     }
@@ -139,23 +283,28 @@
       max-width: 1000px;
       width: 90%;
       padding: 4rem;
+      text-align: center;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .about-image-side {
       position: absolute;
       top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       z-index: 1;
       overflow: hidden;
     }
-    .about-image-side img {
+    .about-image-side video {
       width: 100%;
-      height: 100%;
+      height: 100vh;
+      position: sticky;
+      top: 0;
       object-fit: cover;
-      transition: transform 6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .about-image-side:hover img {
-      transform: scale(1.05);
+      transform: scale(1.35);
     }
     .about-points {
       display: flex;
@@ -167,7 +316,7 @@
     }
     .pt-col h3 {
       font-size: 1.2rem;
-      font-weight: 600;
+      font-weight: 400;
       margin-bottom: 0.5rem;
     }
     .pt-col p {
@@ -188,15 +337,62 @@
     /* ─────────────────────────────────────────
        PRACTICES (SLIDE 3)
     ───────────────────────────────────────── */
+    /* Preloaded background videos (crossfade) */
+    .prac-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      z-index: 1;
+      filter: contrast(1.2) brightness(0.4);
+      pointer-events: none;
+    }
+    .prac-bg.active {
+      opacity: 1;
+    }
+    /* White blur overlay for text readability */
+    .prac-blur-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .prac-blur-overlay.active {
+      opacity: 1;
+    }
+
     .practices-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2rem;
+      margin-top: 3rem;
+    }
+    @media (hover: hover) {
+      .practices-grid:hover .prac-card {
+        opacity: 0.3;
+        transform: scale(0.95);
+      }
+      .practices-grid .prac-card:hover {
+        opacity: 1;
+        transform: scale(1.05);
+      }
     }
     .prac-card {
       display: flex;
+      flex-direction: column;
       align-items: center;
+      text-align: center;
       gap: 1.5rem;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
     }
     .prac-vid {
       width: 120px;
@@ -218,16 +414,24 @@
     .prac-text p {
       font-size: 1rem;
       font-weight: 300;
-      color: var(--mid);
+      color: var(--dim);
+      transition: color 0.3s;
+    }
+    .prac-card:hover .prac-text p {
+      color: var(--text);
     }
 
     /* ─────────────────────────────────────────
        SPEAKERS (SLIDE 4)
     ───────────────────────────────────────── */
+    #speakers {
+      transition: background-color 0.8s ease;
+    }
     .speakers-grid {
       display: flex;
       gap: 3rem;
       margin-top: 2rem;
+      padding-bottom: 6rem; /* Added room for expanding text */
     }
     .spk {
       text-align: center;
@@ -235,29 +439,79 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
-    .spk img {
+    .spk-head {
       width: 160px;
       height: 160px;
       border-radius: 50%;
       object-fit: cover;
       margin-bottom: 1.5rem;
       filter: grayscale(100%);
-      transition: filter 0.4s;
+      transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+      z-index: 3;
     }
-    .spk:hover img { filter: grayscale(0%); }
-    .spk h4 {
+    .spk:hover .spk-head {
+      filter: grayscale(0%);
+      transform: translateY(-40px) scale(0.9);
+    }
+    .spk-info-wrapper {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      width: 100%;
+    }
+    .spk:hover .spk-info-wrapper {
+      grid-template-rows: 1fr;
+    }
+    .spk-info {
+      overflow: hidden;
+    }
+    .spk-info-content {
+      padding-top: 0.5rem;
+      padding-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: var(--text);
+      font-weight: 400;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    .spk:hover .spk-info-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .spk-title {
       font-family: 'Frank Ruhl Libre', serif;
       font-size: 1.6rem;
       font-weight: 500;
       letter-spacing: 0.05em;
       margin-bottom: 0.5rem;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+      z-index: 2;
     }
-    .spk p {
+    .spk-desc {
       font-size: 0.9rem;
       font-weight: 400;
       color: var(--accent);
       margin-top: 0.3rem;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+      z-index: 2;
+    }
+    
+    #speakers .badge,
+    #speakers .huge-title {
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    #speakers:has(.spk:hover) .badge,
+    #speakers:has(.spk:hover) .huge-title {
+      transform: translateY(-20px);
     }
 
     /* ─────────────────────────────────────────
@@ -291,160 +545,242 @@
     }
 
     /* ─────────────────────────────────────────
-       FLOATING MENU
+       FLOATING NAV (CLEAN REWRITE)
     ───────────────────────────────────────── */
-    .mobile-nav { display: none; }
-    
-    .floating-menu {
+    .floating-nav-container {
       position: fixed;
       bottom: 40px;
-      left: 0;
-      right: 0;
-      margin: 0 auto;
-      width: max-content;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none; /* Let clicks pass through container */
+    }
+
+    /* --- THE TOGGLE GROUP (Button + Halo + Label) --- */
+    .fn-toggle-group {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: auto;
+    }
+
+    .floating-nav-container.is-open .fn-toggle-group {
+      opacity: 0;
+      transform: scale(0.5);
+      pointer-events: none;
+    }
+
+    .fn-halo {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 65px; height: 65px;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: halo-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      pointer-events: none;
+    }
+    @keyframes halo-pulse {
+      0% { width: 65px; height: 65px; opacity: 1; }
+      100% { width: 130px; height: 130px; opacity: 0; }
+    }
+
+    .fn-main-btn {
+      position: relative;
+      width: 65px; height: 65px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffffff 0%, #fdfbf8 100%);
+      border: 1px solid rgba(255,255,255,0.8);
+      color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .fm-toggle {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--text);
-      padding: 1rem 3rem;
-      border-radius: 40px;
-      font-size: 1rem;
-      font-family: 'Heebo', sans-serif;
-      font-weight: 500;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 4px 15px rgba(0,0,0,0.1);
+      transition: box-shadow 0.3s;
+      z-index: 2;
     }
-    .fm-toggle:hover {
-      background: var(--text);
-      color: var(--bg);
+    .fn-main-btn:hover {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 8px 25px rgba(0,0,0,0.15);
     }
-
-    .floating-menu.is-open .fm-toggle {
-      opacity: 0;
+    .fn-main-btn svg {
       pointer-events: none;
-      position: absolute;
-      transform: scale(0.8);
     }
 
-    .fm-links {
-      position: absolute;
-      background: rgba(253, 251, 248, 0.9);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(0,0,0,0.06);
-      border-radius: 40px;
+    /* --- THE TABS (5 Links) --- */
+    .fn-tabs {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
+      gap: 0.8rem;
       opacity: 0;
+      transform: translateY(20px) scale(0.9);
       pointer-events: none;
-      transform: scale(0.9) translateY(10px);
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
     }
 
-    .floating-menu.is-open .fm-links {
-      position: relative;
+    .floating-nav-container.is-open .fn-tabs {
       opacity: 1;
+      transform: translateY(0) scale(1);
       pointer-events: auto;
-      transform: scale(1) translateY(0);
     }
 
-    .fm-link {
+    .fn-tab {
+      background: white;
       color: var(--text);
       text-decoration: none;
-      font-size: 0.95rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 40px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
       font-weight: 500;
-      padding: 0.8rem 1.4rem;
-      border-radius: 30px;
-      transition: background 0.2s;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    .fm-link:hover {
-      background: rgba(0,0,0,0.04);
+    .fn-tab:hover {
+      background: var(--bg);
     }
 
-    .fm-close {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 0.8rem 1.2rem;
-      color: var(--dim);
-      transition: color 0.2s;
+    /* ─────────────────────────────────────────
+       CUSTOM CURSOR
+    ───────────────────────────────────────── */
+    /* Mobile nav: hidden on desktop, shown via media query */
+    .mobile-nav { display: none; }
+
+    @media (pointer: fine) {
+      body { cursor: none; }
+      a, button, .spk { cursor: none !important; }
     }
-    .fm-close:hover { color: var(--text); }
+    
+    .custom-cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 15px; height: 15px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s;
+      mix-blend-mode: difference;
+    }
+    .custom-cursor.hovering {
+      width: 40px; height: 40px;
+      background: rgba(255, 255, 255, 0.5);
+    }
 
     /* ─────────────────────────────────────────
        RESPONSIVE
     ───────────────────────────────────────── */
     @media (max-width: 900px) {
+      /* Switch to vertical stacked layout on mobile */
       .h-scroll-container {
-        /* On mobile, usually horizontal scroll is tricky, but let's keep it if requested, 
-           or fallback to vertical. We will keep horizontal for consistency with the desktop App-like feel */
+        flex-direction: column;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+        height: 100vh;
+      }
+      .slide {
+        flex: 0 0 auto;
+        width: 100vw;
+        min-height: 100vh;
+        height: auto;
+        overflow-y: visible;
+        scroll-snap-align: start;
       }
       
-      .fm-toggle, .fm-links { display: none !important; }
+      /* Hide desktop floating nav on mobile */
+      .floating-nav-container { display: none !important; }
+      .custom-cursor { display: none !important; }
+      
+      /* Show mobile nav arrows */
       .mobile-nav {
         display: flex;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10000;
         align-items: center;
-        justify-content: space-between;
-        background: rgba(253, 251, 248, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(0,0,0,0.06);
-        border-radius: 40px;
-        padding: 0.5rem 1rem;
-        width: 220px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        justify-content: center;
+        gap: 2rem;
         pointer-events: auto;
       }
       .mn-arrow {
-        background: none; border: none;
+        background: rgba(255,255,255,0.7);
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 50%;
         color: var(--text);
         cursor: pointer;
-        padding: 0.5rem;
+        width: 40px; height: 40px;
         display: flex; align-items: center; justify-content: center;
-        transition: opacity 0.3s;
+        transition: opacity 0.3s, background 0.3s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        padding: 0;
+      }
+      .mn-arrow:active {
+        background: rgba(255,255,255,1);
       }
       .mn-current-page {
-        font-size: 1rem;
-        font-weight: 500;
-        color: var(--text);
-        user-select: none;
+        display: none;
       }
 
-      .slide-inner { padding: 2rem; }
-      #about { flex-direction: column; justify-content: center; }
-      .about-image-side { height: 100vh; flex: none; position: absolute; }
-      .about-text-side { padding: 2rem; width: 95%; margin: 1rem; }
+      .slide-inner { padding: 4rem 2rem; }
+      #about { display: block; }
+      .about-image-side { position: absolute; height: 100%; width: 100%; }
+      .about-text-side { padding: 4rem 2rem; width: 100%; }
       .about-points { flex-direction: column; gap: 1.5rem; }
-      .practices-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-      .speakers-grid { flex-wrap: wrap; justify-content: center; }
+      .practices-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .speakers-grid { flex-wrap: wrap; justify-content: center; gap: 2rem; }
       .huge-title { font-size: 2.5rem; }
     }
   </style>
 </head>
 <body>
-
-  <!-- FLOATING MENU -->
-  <div class="floating-menu" id="floating-menu">
-    <button class="fm-toggle" id="fm-toggle">שוטט</button>
-    <div class="fm-links" id="fm-links">
-      <a href="#hero" class="fm-link">ראשי</a>
-      <a href="#about" class="fm-link">אודות</a>
-      <a href="#practices" class="fm-link">פרקטיקות</a>
-      <a href="#speakers" class="fm-link">מרצים</a>
-      <a href="#register" class="fm-link">הרשמה</a>
-      <button class="fm-close" id="fm-close">✕</button>
+  
+  <!-- INTRO SPLASH SCREEN -->
+  <div id="intro-screen" class="intro-screen">
+    <div class="intro-content">
+      <div class="intro-logo-wrapper">
+        <img src="logo.svg" alt="צירופים" class="intro-logo-bg" onerror="this.style.display='none'">
+        <img src="logo.svg" alt="צירופים" class="intro-logo-fill" onerror="this.style.display='none'">
+      </div>
+      <button id="intro-btn" class="intro-shalom-btn">שלום</button>
     </div>
+  </div>
+
+  <!-- CUSTOM CURSOR -->
+  <div class="custom-cursor" id="custom-cursor"></div>
+
+  <!-- FLOATING MENU (CLEAN REWRITE) -->
+  <div class="floating-nav-container" id="floating-nav">
+    
+    <!-- The 5 Tabs -->
+    <div class="fn-tabs">
+      <a href="#hero" class="fn-tab magnetic-btn">ראשי</a>
+      <a href="#about" class="fn-tab magnetic-btn">אודות</a>
+      <a href="#practices" class="fn-tab magnetic-btn">פרקטיקות</a>
+      <a href="#speakers" class="fn-tab magnetic-btn">מרצים</a>
+      <a href="#register" class="fn-tab magnetic-btn">הרשמה</a>
+    </div>
+
+    <!-- Toggle Button -->
+    <div class="fn-toggle-group">
+      <div class="fn-halo"></div>
+      <button class="fn-main-btn magnetic-btn" id="fn-main-btn" aria-label="Open Menu">
+        <svg class="fn-arrow-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <polyline points="19 12 12 19 5 12"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
     <!-- MOBILE NAV -->
     <div class="mobile-nav" id="mobile-nav">
       <button class="mn-arrow" id="mn-prev">
@@ -461,25 +797,30 @@
   <main class="h-scroll-container" id="h-scroll">
 
     <!-- 1. HERO -->
-    <section class="slide" id="hero">
-      <div class="slide-inner" style="text-align: center; display: flex; flex-direction: column; align-items: center; position: relative;">
+    <section class="slide" id="hero" style="position: relative; overflow: hidden;">
+      <video src="דף הבית.mp4" autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.6; pointer-events: none;"></video>
+      <div class="slide-inner" style="text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2;">
         
-        <!-- Mystical Circular Text -->
-        <div class="circular-text" style="position: absolute; top: -20px; right: -20px;">
-          <svg viewBox="0 0 100 100" width="140" height="140">
-            <path id="circlePath" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none" />
-            <text fill="var(--text)" font-size="11" letter-spacing="3" style="font-family: 'Heebo', sans-serif;">
-              <textPath href="#circlePath">
-                צירופים · כפר קהילתי זמני ביער · צירופים · כפר קהילתי זמני ביער · 
-              </textPath>
-            </text>
-          </svg>
+        <!-- Mystical Circular Text & Logo -->
+        <div class="hero-logo-wrapper">
+          <div class="circular-text" style="position: absolute; width: 140%; height: 140%; z-index: 1; pointer-events: none;">
+            <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible;">
+              <path id="circlePath" d="M 50, 50 m -48, 0 a 48,48 0 1,1 96,0 a 48,48 0 1,1 -96,0" fill="none" />
+              <text fill="var(--text)" font-size="5.5" letter-spacing="2" style="font-family: 'Heebo', sans-serif;">
+                <textPath href="#circlePath" startOffset="0%">
+                  צירופים · כפר קהילתי זמני ביער · צירופים · כפר קהילתי זמני ביער · 
+                </textPath>
+              </text>
+            </svg>
+          </div>
+          <img class="hero-logo" src="logo.svg" alt="צירופים" onerror="this.style.display='none'" style="position: relative; z-index: 2;">
         </div>
 
-        <img class="hero-logo" src="logo.svg" alt="צירופים" onerror="this.style.display='none'">
-        <h2 class="huge-title" style="font-size: clamp(2rem, 4vw, 3rem);">כפר קהילתי זמני ביער</h2>
-        <p class="subtitle" style="margin-bottom: 1rem;"><span>לחוות טראנס והתעלות דרך פרקטיקות קבליות.</span></p>
-        <div class="hero-info">חול המועד סוכות <span>·</span> עין יעל, ירושלים</div>
+        <div class="title-group">
+          <h2 class="huge-title">כפר קהילתי זמני ביער</h2>
+          <p class="subtitle" style="margin-bottom: 1.5rem;"><span>לחוות טראנס והתעלות דרך פרקטיקות קבליות</span></p>
+        </div>
+        <div class="hero-info"><span>חול המועד סוכות · עין יעל, ירושלים</span></div>
       </div>
     </section>
 
@@ -487,71 +828,81 @@
     <section class="slide" id="about">
       <div class="about-text-side">
         <span class="badge">01 — אודות</span>
-        <h2 class="huge-title">שלושה ימים ביער.<br>רק אתה והנשימה.</h2>
-        <p class="subtitle">
-          <span>צירופים הוא מרחב שנוצר פעם בשנה. לקחת אוויר, ללמוד מה שפותח את הראש, ולשיר עד שהגוף מבין מה הנשמה רוצה.</span>
-        </p>
+        <div class="title-group">
+          <h2 class="huge-title">שלושה ימים ביער<br>רק אתה והנשימה</h2>
+          <p class="subtitle">
+            <span>צירופים הוא מרחב שנוצר פעם בשנה. לקחת אוויר, ללמוד מה שפותח את הראש, ולשיר עד שהגוף מבין מה הנשמה רוצה</span>
+          </p>
+        </div>
         <div class="about-points">
           <div class="pt-col">
             <h3><span>אלטרנטיבה שורשית</span></h3>
-            <p><span>מיסטיקה יהודית וקבלה מעשית. מהמקום שממנו יצאת.</span></p>
+            <p><span>מיסטיקה יהודית וקבלה מעשית. מהמקום שממנו יצאת</span></p>
           </div>
           <div class="pt-col">
             <h3><span>מוגנות הלכתית</span></h3>
-            <p><span>חופש מקסימלי במעטפת בטוחה ושמירת צניעות.</span></p>
+            <p><span>חופש מקסימלי במעטפת בטוחה ושמירת צניעות</span></p>
           </div>
         </div>
       </div>
       <div class="about-image-side">
-        <img src="נייס_עוד_יותר_202604231638.jpeg" alt="יער מואר">
+        <video src="odot video.mp4" autoplay loop muted playsinline></video>
       </div>
     </section>
 
     <!-- 3. PRACTICES -->
-    <section class="slide" id="practices">
-      <div class="slide-inner">
+    <section class="slide" id="practices" style="position: relative; overflow: hidden;">
+      <!-- Preloaded background videos for crossfade -->
+      <video class="prac-bg" data-practice="hitbonenut" src="התבוננות.mp4" autoplay loop muted playsinline></video>
+      <video class="prac-bg" data-practice="tzeruf" src="צירוף אותיות.mp4" autoplay loop muted playsinline></video>
+      <video class="prac-bg" data-practice="hitbodedut" src="התבודדות.mp4" autoplay loop muted playsinline></video>
+      <video class="prac-bg" data-practice="nigun" src="ניגון.mp4" autoplay loop muted playsinline></video>
+      <!-- White blur overlay -->
+      <div class="prac-blur-overlay"></div>
+
+      <div class="slide-inner" style="position: relative; z-index: 3;">
         <span class="badge">02 — פרקטיקות</span>
-        <h2 class="huge-title">להחזיר את הכלים הביתה.</h2>
+        <h2 class="huge-title">להחזיר את הכלים הביתה</h2>
         
         <div class="practices-grid">
           
-          <div class="prac-card">
+          <div class="prac-card" data-practice="hitbonenut">
             <div class="prac-vid">
-              <video src="https://assets.mixkit.co/videos/preview/mixkit-sun-rays-in-a-forest-4375-large.mp4" autoplay loop muted playsinline></video>
+              <video src="התבוננות.mp4" autoplay loop muted playsinline></video>
             </div>
             <div class="prac-text">
               <h4>התבוננות</h4>
-              <p>לשהות בתוך המחשבה עד שהיא נפתחת.</p>
+              <p>לשהות בתוך המחשבה עד שהיא נפתחת</p>
             </div>
           </div>
 
-          <div class="prac-card">
+          <div class="prac-card" data-practice="tzeruf">
             <div class="prac-vid">
-              <video src="https://assets.mixkit.co/videos/preview/mixkit-ink-swirling-in-water-238-large.mp4" autoplay loop muted playsinline></video>
+              <video src="צירוף אותיות.mp4" autoplay loop muted playsinline></video>
             </div>
             <div class="prac-text">
               <h4>צירוף אותיות</h4>
-              <p>טראנס מנטלי מבית אברהם אבולעפיה.</p>
+              <p>טראנס מנטלי מבית אברהם אבולעפיה</p>
             </div>
           </div>
 
-          <div class="prac-card">
+          <div class="prac-card" data-practice="hitbodedut">
             <div class="prac-vid">
-              <video src="https://assets.mixkit.co/videos/preview/mixkit-water-falling-from-a-stone-fountain-1160-large.mp4" autoplay loop muted playsinline></video>
+              <video src="התבודדות.mp4" autoplay loop muted playsinline></video>
             </div>
             <div class="prac-text">
               <h4>התבודדות</h4>
-              <p>שיחה חופשית. הכניסה הפשוטה לעומק הפנימי.</p>
+              <p>שיחה חופשית. הכניסה הפשוטה לעומק הפנימי</p>
             </div>
           </div>
 
-          <div class="prac-card">
+          <div class="prac-card" data-practice="nigun">
             <div class="prac-vid">
-              <video src="https://assets.mixkit.co/videos/preview/mixkit-people-pouring-a-warm-drink-around-a-campfire-513-large.mp4" autoplay loop muted playsinline></video>
+              <video src="ניגון.mp4" autoplay loop muted playsinline></video>
             </div>
             <div class="prac-text">
               <h4>ניגון</h4>
-              <p>לא כמוזיקה, אלא כרזוננס לנפש.</p>
+              <p>לא כמוזיקה, אלא כרזוננס לנפש</p>
             </div>
           </div>
 
@@ -566,25 +917,45 @@
         <h2 class="huge-title">האנשים שמובילים</h2>
         
         <div class="speakers-grid">
-          <div class="spk">
-            <img src="https://i.pravatar.cc/150?u=roy" alt="רועי יוזביץ׳">
-            <h4>ד״ר רועי יוזביץ׳</h4>
-            <p>מחשבה ותודעה</p>
+          <div class="spk" data-color="#d8dce3">
+            <img src="https://i.pravatar.cc/150?u=roy" alt="רועי יוזביץ׳" class="spk-head">
+            <div class="spk-info-wrapper">
+              <div class="spk-info">
+                <div class="spk-info-content">לפרק את המנגנון המחשבתי ולגעת בנשמה.<br><br>ניכנס לעומקן של האשליות הקוגניטיביות שמנהלות אותנו ביומיום, נלמד כיצד לקלף תבניות מקובעות ונחווה רגע בו המחיצות קורסות ונשאר קיום חשוף, נקי ואמיתי.</div>
+              </div>
+            </div>
+            <h4 class="spk-title">ד״ר רועי יוזביץ׳</h4>
+            <p class="spk-desc">מחשבה ותודעה</p>
           </div>
-          <div class="spk">
-            <img src="https://i.pravatar.cc/150?u=dudi" alt="דודי אדלר">
-            <h4>ד״ר דודי אדלר</h4>
-            <p>נשימה אקסטטית</p>
+          <div class="spk" data-color="#d1a9a9">
+            <img src="https://i.pravatar.cc/150?u=dudi" alt="דודי אדלר" class="spk-head">
+            <div class="spk-info-wrapper">
+              <div class="spk-info">
+                <div class="spk-info-content">מסע פנימי ועוצמתי אל מעמקי הלא־מודע דרך "נשימת האחד".<br><br>בשילוב ריברסינג וקבלה, נפרמט את הגוף, נשחרר חסמים כבדים ונגיע בלקיחת אוויר אחת להתעלות נפשית ושמחה עמוקה.</div>
+              </div>
+            </div>
+            <h4 class="spk-title">ד״ר דודי אדלר</h4>
+            <p class="spk-desc">נשימה אקסטטית</p>
           </div>
-          <div class="spk">
-            <img src="https://i.pravatar.cc/150?u=elisha" alt="אלישע וייל">
-            <h4>רב אלישע וייל</h4>
-            <p>דבקות ותפילה</p>
+          <div class="spk" data-color="#e6d5a1">
+            <img src="https://i.pravatar.cc/150?u=elisha" alt="אלישע וייל" class="spk-head">
+            <div class="spk-info-wrapper">
+              <div class="spk-info">
+                <div class="spk-info-content">חיבור בלתי אמצעי המחבר בין תנועה, מילים והשתיקה שביניהן.<br><br>יחד ניגע בסוד הדבקות החסידית, נלמד כיצד למסור את עצמנו במלוא הכוונה, ולהפוך את הגוף לכלי טהור שמוצף באור והתרוממות רוח.</div>
+              </div>
+            </div>
+            <h4 class="spk-title">רב אלישע וייל</h4>
+            <p class="spk-desc">דבקות ותפילה</p>
           </div>
-          <div class="spk">
-            <img src="https://i.pravatar.cc/150?u=noam" alt="נועם אלמוג">
-            <h4>נועם אלמוג</h4>
-            <p>ניגון וקול פנימי</p>
+          <div class="spk" data-color="#e6bda1">
+            <img src="https://i.pravatar.cc/150?u=noam" alt="נועם אלמוג" class="spk-head">
+            <div class="spk-info-wrapper">
+              <div class="spk-info">
+                <div class="spk-info-content">הזמנה לגלות את העוצמה המרפאת של הקול האנושי החשוף.<br><br>לא רק להאזין, אלא ללמוד לייצר תדר שמרעיד את חדרי הלב, ולהפוך את הקול לתיבת התהודה הטבעית של הנפש והמרחב.</div>
+              </div>
+            </div>
+            <h4 class="spk-title">נועם אלמוג</h4>
+            <p class="spk-desc">ניגון וקול פנימי</p>
           </div>
         </div>
       </div>
@@ -592,13 +963,13 @@
 
     <!-- 5. REGISTER -->
     <section class="slide" id="register" style="position: relative; overflow: hidden;">
-      <video id="register-bg-video" src="Slow_fabric_movement_202604231757.mp4" autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 1; opacity: 0.8; filter: contrast(1.1) brightness(1.1);"></video>
+      <video id="register-bg-video" src="Slow_fabric_movement_202604231757.mp4" autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.8; filter: blur(3px) contrast(1.1) brightness(1.1);"></video>
       <div class="slide-inner" style="text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2;">
         <span class="badge">04 — הרשמה</span>
-        <h2 class="huge-title" style="font-size: clamp(2rem, 5vw, 4rem);">לפנות מקום לשעה<br>שבה אתה שומע את עצמך.</h2>
+        <h2 class="huge-title">לפנות מקום לשעה<br>שבה אתה שומע את עצמך</h2>
         <a href="#" class="btn" style="margin-top: 2rem;">שריינו מקום</a>
         
-        <div style="margin-top: 5rem; opacity: 0.5;">
+        <div style="margin-top: 5rem;">
           <img src="logo.svg" alt="צירופים" style="height: 24px; margin-bottom: 0.5rem;">
           <p style="font-size: 0.8rem;">חול המועד סוכות · עין יעל, ירושלים</p>
         </div>
@@ -614,51 +985,96 @@
     let isScrolling = false;
 
     scrollContainer.addEventListener('wheel', (evt) => {
+      // Only hijack wheel on desktop; on mobile let native vertical scroll work
+      if (window.innerWidth <= 900) return;
+
       if (Math.abs(evt.deltaY) > 10) {
         evt.preventDefault();
         if (isScrolling) return;
         
         isScrolling = true;
-        // In RTL, scrollLeft is negative or zero.
         const currentLeft = Math.abs(scrollContainer.scrollLeft);
         const currentIdx = Math.round(currentLeft / window.innerWidth);
         
-        if (evt.deltaY > 0) { // Scrolling down -> Next slide (move left)
+        if (evt.deltaY > 0) {
           if (currentIdx < slidesArrGlobal.length - 1) {
             slidesArrGlobal[currentIdx + 1].scrollIntoView({ behavior: 'smooth' });
           }
-        } else { // Scrolling up -> Prev slide (move right)
+        } else {
           if (currentIdx > 0) {
             slidesArrGlobal[currentIdx - 1].scrollIntoView({ behavior: 'smooth' });
           }
         }
         
-        // Cooldown timer to prevent multiple fast jumps
         setTimeout(() => { isScrolling = false; }, 1000);
       }
     }, { passive: false });
 
-    // 2. Floating Menu Logic
-    const fm = document.getElementById('floating-menu');
-    const fmToggle = document.getElementById('fm-toggle');
-    const fmClose = document.getElementById('fm-close');
+    // 2. Floating Menu Logic (Clean Rewrite)
+    const fNav = document.getElementById('floating-nav');
+    const fMainBtn = document.getElementById('fn-main-btn');
 
-    fmToggle.addEventListener('click', () => fm.classList.add('is-open'));
-    fmClose.addEventListener('click', () => fm.classList.remove('is-open'));
+    if (fMainBtn) {
+      fMainBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fNav.classList.add('is-open');
+      });
+    }
 
-    // 3. Smooth scroll to slides
-    document.querySelectorAll('.fm-link').forEach(link => {
-      link.addEventListener('click', (e) => {
+    // Close when clicking outside tabs
+    document.addEventListener('click', (e) => {
+      if (fNav && fNav.classList.contains('is-open') && !e.target.closest('.fn-tabs')) {
+        fNav.classList.remove('is-open');
+      }
+    });
+
+    // 3. Custom Cursor & Magnetic Effect (Zero Delay)
+    const cursor = document.getElementById('custom-cursor');
+    if (cursor && window.matchMedia("(pointer: fine)").matches) {
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+      });
+
+      // Cursor hover states
+      document.querySelectorAll('a, button, .spk, .magnetic-btn').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+      });
+
+      // Magnetic Buttons Logic
+      document.querySelectorAll('.magnetic-btn').forEach((btn) => {
+        btn.addEventListener('mousemove', (e) => {
+          const rect = btn.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          // Apply magnetic pull and keep default scale interaction
+          btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transform = ''; // Reset to let CSS handle open/close transforms
+        });
+      });
+    }
+
+    // 4. Smooth scroll to slides (desktop = horizontal, mobile = vertical)
+    const isMobile = () => window.innerWidth <= 900;
+
+    document.querySelectorAll('.fn-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
         e.preventDefault();
-        const targetId = link.getAttribute('href').substring(1);
+        const targetId = tab.getAttribute('href').substring(1);
         const targetEl = document.getElementById(targetId);
         if (targetEl) {
-          // Calculate offset relative to the scroll container
-          const targetLeft = targetEl.offsetLeft;
-          scrollContainer.scrollTo({
-            left: targetLeft,
-            behavior: 'smooth'
-          });
+          if (isMobile()) {
+            targetEl.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            scrollContainer.scrollTo({
+              left: targetEl.offsetLeft,
+              behavior: 'smooth'
+            });
+          }
+          const fNav = document.getElementById('floating-nav');
+          if(fNav) fNav.classList.remove('is-open');
         }
       });
     });
@@ -709,6 +1125,89 @@
     if (regVideo) {
       regVideo.playbackRate = 0.5; // Plays at 50% speed
     }
+
+    // 6. Practices Hover Background Effect (Crossfade Dissolve)
+    const pracCards = document.querySelectorAll('.prac-card');
+    const pracBgVideos = document.querySelectorAll('.prac-bg');
+    const pracBlurOverlay = document.querySelector('.prac-blur-overlay');
+    const pracGrid = document.querySelector('.practices-grid');
+
+    if (pracBgVideos.length > 0) {
+      pracCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          if (window.innerWidth > 900) {
+            const practice = card.dataset.practice;
+            // Crossfade: deactivate all, activate the matching one
+            pracBgVideos.forEach(v => v.classList.remove('active'));
+            const target = document.querySelector(`.prac-bg[data-practice="${practice}"]`);
+            if (target) target.classList.add('active');
+            if (pracBlurOverlay) pracBlurOverlay.classList.add('active');
+          }
+        });
+      });
+
+      if (pracGrid) {
+        pracGrid.addEventListener('mouseleave', () => {
+          if (window.innerWidth > 900) {
+            pracBgVideos.forEach(v => v.classList.remove('active'));
+            if (pracBlurOverlay) pracBlurOverlay.classList.remove('active');
+          }
+        });
+      }
+    }
+
+    // 6b. Speakers Kabbalistic Color Background
+    const speakersSection = document.getElementById('speakers');
+    document.querySelectorAll('#speakers .spk').forEach(spk => {
+      spk.addEventListener('mouseenter', () => {
+        if (speakersSection && spk.dataset.color) {
+          speakersSection.style.backgroundColor = spk.dataset.color;
+        }
+      });
+      spk.addEventListener('mouseleave', () => {
+        if (speakersSection) {
+          speakersSection.style.backgroundColor = '';
+        }
+      });
+    });
+
+    // 7. Global Video Loop Fix (prevent black flash at the end)
+    document.querySelectorAll('video[loop]').forEach(vid => {
+      vid.addEventListener('timeupdate', () => {
+        // Reset to start right before the end to avoid black frames
+        if (vid.duration && vid.currentTime >= vid.duration - 0.15) {
+          vid.currentTime = 0;
+          vid.play().catch(e => console.log('Autoplay prevented:', e));
+        }
+      });
+    });
+
+    // 8. Intro Splash Screen Sequence
+    const introScreen = document.getElementById('intro-screen');
+    const introBtn = document.getElementById('intro-btn');
+    
+    if (introScreen && introBtn) {
+      // Step 1: Wait for fill animation (2.5s)
+      setTimeout(() => {
+        introBtn.classList.add('show');
+      }, 2500);
+
+      // Step 2: User clicks -> spin -> slide out
+      introBtn.addEventListener('click', () => {
+        introBtn.classList.add('spin');
+        
+        // Wait for spin to finish (600ms), then slide out screen
+        setTimeout(() => {
+          introScreen.classList.add('slide-up');
+          
+          // Wait for slide up transition (1s), then hide from DOM
+          setTimeout(() => {
+            introScreen.style.display = 'none';
+          }, 1000);
+        }, 600);
+      });
+    }
+
   </script>
 
 </body>
