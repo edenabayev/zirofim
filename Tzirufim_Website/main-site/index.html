@@ -1011,6 +1011,7 @@
     const scrollContainer = document.getElementById('h-scroll');
     const slidesArrGlobal = Array.from(document.querySelectorAll('.slide'));
     let isScrolling = false;
+    let wheelIdleTimer = null;
 
     scrollContainer.addEventListener('wheel', (evt) => {
       // Only hijack wheel on desktop; on mobile let native vertical scroll work
@@ -1018,12 +1019,18 @@
 
       if (Math.abs(evt.deltaY) > 10) {
         evt.preventDefault();
+
+        // Keep the lock alive while wheel events keep arriving (trackpad momentum),
+        // so one gesture advances exactly one slide. Unlock 500ms after scrolling stops.
+        clearTimeout(wheelIdleTimer);
+        wheelIdleTimer = setTimeout(() => { isScrolling = false; }, 500);
+
         if (isScrolling) return;
-        
         isScrolling = true;
+
         const currentLeft = Math.abs(scrollContainer.scrollLeft);
         const currentIdx = Math.round(currentLeft / window.innerWidth);
-        
+
         if (evt.deltaY > 0) {
           if (currentIdx < slidesArrGlobal.length - 1) {
             slidesArrGlobal[currentIdx + 1].scrollIntoView({ behavior: 'smooth' });
@@ -1033,8 +1040,6 @@
             slidesArrGlobal[currentIdx - 1].scrollIntoView({ behavior: 'smooth' });
           }
         }
-        
-        setTimeout(() => { isScrolling = false; }, 1000);
       }
     }, { passive: false });
 
