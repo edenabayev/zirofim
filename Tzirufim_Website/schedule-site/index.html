@@ -62,8 +62,8 @@
     position: relative;
     width: 100%;
     min-height: 100vh;
-    /* ריפוד מוגדל בתחתית למניעת חיתוך ופתיחת מרחב גלילה בטוח */
-    padding: 15vh 4vw 55vh; 
+    /* ריפוד תחתון מאוזן: מספיק כדי למנוע חיתוך, בלי גלילה מיותרת */
+    padding: 12vh 4vw 20vh;
     overflow: visible; /* מאפשר לתלת-מימד לעבוד בלי שיטוח דפדפן */
     perspective: 1500px;
   }
@@ -220,7 +220,7 @@
     color: var(--text-dark);
     z-index: 4;
     box-shadow: 0 -30px 60px rgba(0,0,0,0.1);
-    padding-bottom: 85vh; /* מרווח מוגדל למניעת תקיעה ביום האחרון */
+    padding-bottom: 25vh; /* מרווח סיום מאוזן */
   }
 
   .day-header {
@@ -370,7 +370,7 @@
   /* התאמות למובייל */
   @media (max-width: 768px) {
     .day-section {
-      padding-bottom: 30vh;
+      padding-bottom: 12vh;
     }
 
     .day-header {
@@ -601,9 +601,9 @@
             ease: "power2.out",
             scrollTrigger: {
               trigger: event,
-              start: "top 98%", 
-              end: "top 68%", // מתיישר בזמן כדי למנוע חיתוך או היתקעות
-              scrub: 1.2
+              start: "top 95%",
+              end: "top 78%", // טווח קצר יותר — תנועה קטנה חושפת את הכרטיס מהר
+              scrub: 0.4
             }
           }
         );

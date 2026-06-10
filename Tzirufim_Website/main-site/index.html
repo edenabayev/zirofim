@@ -698,18 +698,21 @@
        RESPONSIVE
     ───────────────────────────────────────── */
     @media (max-width: 900px) {
+      /* Use dynamic viewport height so mobile browser chrome doesn't cut/gap content */
+      body, html { height: 100dvh; }
+
       /* Switch to vertical stacked layout on mobile */
       .h-scroll-container {
         flex-direction: column;
         overflow-x: hidden;
         overflow-y: auto;
         scroll-snap-type: y mandatory;
-        height: 100vh;
+        height: 100dvh;
       }
       .slide {
         flex: 0 0 auto;
         width: 100vw;
-        min-height: 100vh;
+        min-height: 100dvh;
         height: auto;
         overflow-y: visible;
         scroll-snap-align: start;
@@ -757,8 +760,14 @@
       .about-text-side { padding: 4rem 2rem; width: 100%; }
       .about-points { flex-direction: column; gap: 1.5rem; }
       .practices-grid { grid-template-columns: 1fr; gap: 2rem; }
-      .speakers-grid { flex-wrap: wrap; justify-content: center; gap: 2rem; }
+      .speakers-grid { flex-wrap: wrap; justify-content: center; gap: 3rem; padding-bottom: 2rem; }
       .huge-title { font-size: 2.5rem; }
+
+      /* No hover on touch: show each speaker's bio by default, stacked */
+      .spk { flex: 0 0 auto; width: 100%; max-width: 360px; }
+      .spk-head { filter: grayscale(0%); }
+      .spk-info-wrapper { grid-template-rows: 1fr; }
+      .spk-info-content { opacity: 1; transform: none; }
     }
   </style>
 </head>
