@@ -226,12 +226,12 @@
       display: block;
       width: 100%;
       text-align: right;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.3em;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
       color: var(--dim);
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     /* ─────────────────────────────────────────
@@ -410,6 +410,7 @@
       font-size: 1.4rem;
       font-weight: 600;
       margin-bottom: 0.3rem;
+      color: var(--text);
     }
     .prac-text p {
       font-size: 1rem;
@@ -425,7 +426,14 @@
        SPEAKERS (SLIDE 4)
     ───────────────────────────────────────── */
     #speakers {
-      transition: background-color 0.8s ease;
+      background-color: transparent;
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+    }
+    #speakers .slide-inner {
+      position: relative;
+      z-index: 2;
     }
     .speakers-grid {
       display: flex;
@@ -440,6 +448,10 @@
       flex-direction: column;
       align-items: center;
       position: relative;
+      transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    #speakers:has(.spk:hover) .spk:not(:hover) {
+      opacity: 0.35;
     }
     .spk-head {
       width: 160px;
@@ -451,10 +463,13 @@
       transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
       position: relative;
       z-index: 3;
+      border: 2px solid transparent;
     }
     .spk:hover .spk-head {
       filter: grayscale(0%);
       transform: translateY(-40px) scale(0.9);
+      border-color: var(--text);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
     .spk-info-wrapper {
       display: grid;
@@ -474,7 +489,7 @@
       opacity: 0;
       transform: translateY(10px);
       transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       line-height: 1.4;
       color: var(--text);
       font-weight: 400;
@@ -494,20 +509,25 @@
       transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
       position: relative;
       z-index: 2;
+      color: var(--text);
     }
     .spk-desc {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 400;
-      color: var(--accent);
+      color: var(--dim);
       margin-top: 0.3rem;
-      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), color 0.6s ease;
       position: relative;
       z-index: 2;
+    }
+    .spk:hover .spk-title,
+    .spk:hover .spk-desc {
+      transform: translateY(-20px);
     }
     
     #speakers .badge,
     #speakers .huge-title {
-      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), color 0.6s ease;
     }
     #speakers:has(.spk:hover) .badge,
     #speakers:has(.spk:hover) .huge-title {
@@ -791,7 +811,6 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
     </div>
-  </div>
 
   <!-- HORIZONTAL SCROLL WRAPPER -->
   <main class="h-scroll-container" id="h-scroll">
@@ -917,45 +936,45 @@
         <h2 class="huge-title">האנשים שמובילים</h2>
         
         <div class="speakers-grid">
-          <div class="spk" data-color="#d8dce3">
+          <div class="spk">
             <img src="https://i.pravatar.cc/150?u=roy" alt="רועי יוזביץ׳" class="spk-head">
+            <h4 class="spk-title">ד״ר רועי יוזביץ׳</h4>
+            <p class="spk-desc">מחשבה ותודעה</p>
             <div class="spk-info-wrapper">
               <div class="spk-info">
                 <div class="spk-info-content">לפרק את המנגנון המחשבתי ולגעת בנשמה.<br><br>ניכנס לעומקן של האשליות הקוגניטיביות שמנהלות אותנו ביומיום, נלמד כיצד לקלף תבניות מקובעות ונחווה רגע בו המחיצות קורסות ונשאר קיום חשוף, נקי ואמיתי.</div>
               </div>
             </div>
-            <h4 class="spk-title">ד״ר רועי יוזביץ׳</h4>
-            <p class="spk-desc">מחשבה ותודעה</p>
           </div>
-          <div class="spk" data-color="#d1a9a9">
+          <div class="spk">
             <img src="https://i.pravatar.cc/150?u=dudi" alt="דודי אדלר" class="spk-head">
+            <h4 class="spk-title">ד״ר דודי אדלר</h4>
+            <p class="spk-desc">נשימה אקסטטית</p>
             <div class="spk-info-wrapper">
               <div class="spk-info">
                 <div class="spk-info-content">מסע פנימי ועוצמתי אל מעמקי הלא־מודע דרך "נשימת האחד".<br><br>בשילוב ריברסינג וקבלה, נפרמט את הגוף, נשחרר חסמים כבדים ונגיע בלקיחת אוויר אחת להתעלות נפשית ושמחה עמוקה.</div>
               </div>
             </div>
-            <h4 class="spk-title">ד״ר דודי אדלר</h4>
-            <p class="spk-desc">נשימה אקסטטית</p>
           </div>
-          <div class="spk" data-color="#e6d5a1">
+          <div class="spk">
             <img src="https://i.pravatar.cc/150?u=elisha" alt="אלישע וייל" class="spk-head">
+            <h4 class="spk-title">רב אלישע וייל</h4>
+            <p class="spk-desc">דבקות ותפילה</p>
             <div class="spk-info-wrapper">
               <div class="spk-info">
                 <div class="spk-info-content">חיבור בלתי אמצעי המחבר בין תנועה, מילים והשתיקה שביניהן.<br><br>יחד ניגע בסוד הדבקות החסידית, נלמד כיצד למסור את עצמנו במלוא הכוונה, ולהפוך את הגוף לכלי טהור שמוצף באור והתרוממות רוח.</div>
               </div>
             </div>
-            <h4 class="spk-title">רב אלישע וייל</h4>
-            <p class="spk-desc">דבקות ותפילה</p>
           </div>
-          <div class="spk" data-color="#e6bda1">
+          <div class="spk">
             <img src="https://i.pravatar.cc/150?u=noam" alt="נועם אלמוג" class="spk-head">
+            <h4 class="spk-title">נועם אלמוג</h4>
+            <p class="spk-desc">ניגון וקול פנימי</p>
             <div class="spk-info-wrapper">
               <div class="spk-info">
                 <div class="spk-info-content">הזמנה לגלות את העוצמה המרפאת של הקול האנושי החשוף.<br><br>לא רק להאזין, אלא ללמוד לייצר תדר שמרעיד את חדרי הלב, ולהפוך את הקול לתיבת התהודה הטבעית של הנפש והמרחב.</div>
               </div>
             </div>
-            <h4 class="spk-title">נועם אלמוג</h4>
-            <p class="spk-desc">ניגון וקול פנימי</p>
           </div>
         </div>
       </div>
@@ -971,7 +990,7 @@
         
         <div style="margin-top: 5rem;">
           <img src="logo.svg" alt="צירופים" style="height: 24px; margin-bottom: 0.5rem;">
-          <p style="font-size: 0.8rem;">חול המועד סוכות · עין יעל, ירושלים</p>
+          <p style="font-size: 0.95rem;">חול המועד סוכות · עין יעל, ירושלים</p>
         </div>
       </div>
     </section>
@@ -1156,20 +1175,7 @@
       }
     }
 
-    // 6b. Speakers Kabbalistic Color Background
-    const speakersSection = document.getElementById('speakers');
-    document.querySelectorAll('#speakers .spk').forEach(spk => {
-      spk.addEventListener('mouseenter', () => {
-        if (speakersSection && spk.dataset.color) {
-          speakersSection.style.backgroundColor = spk.dataset.color;
-        }
-      });
-      spk.addEventListener('mouseleave', () => {
-        if (speakersSection) {
-          speakersSection.style.backgroundColor = '';
-        }
-      });
-    });
+
 
     // 7. Global Video Loop Fix (prevent black flash at the end)
     document.querySelectorAll('video[loop]').forEach(vid => {
@@ -1181,6 +1187,8 @@
         }
       });
     });
+
+
 
     // 8. Intro Splash Screen Sequence
     const introScreen = document.getElementById('intro-screen');
