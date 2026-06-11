@@ -263,6 +263,7 @@
     transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     transform-style: preserve-3d;
     backface-visibility: hidden;
+    will-change: transform, opacity;
   }
 
   .event-item:hover {
@@ -577,30 +578,21 @@
         onLeaveBack: () => gsap.to(".fab-button", { opacity: 0, pointerEvents: "none", duration: 0.4 })
       });
 
-      // אנימציות לכל פריט — קלות במובייל (fade-up בלבד), תלת-מימד מלא בדסקטופ
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      // אנימציית כניסה: כל כרטיס נפתח פנימה משמאל כמו פאה של קוביה הונגרית שמסתובבת
       const events = gsap.utils.toArray('.event-item');
-      events.forEach((event, i) => {
-        const isOdd = i % 2 !== 0;
-        const rotY = isOdd ? -15 : 15;
-
-        const fromVars = isMobile
-          ? { opacity: 0, y: 40 }
-          : { opacity: 0, y: 120, rotationX: -60, rotationY: rotY, transformOrigin: "center bottom -150px" };
-        const toVars = isMobile
-          ? { opacity: 1, y: 0 }
-          : { opacity: 1, y: 0, rotationX: 0, rotationY: 0 };
-
+      events.forEach((event) => {
         gsap.fromTo(event,
-          fromVars,
+          { opacity: 0, rotationY: -90, x: -60, transformOrigin: "left center" },
           {
-            ...toVars,
+            opacity: 1,
+            rotationY: 0,
+            x: 0,
             ease: "power2.out",
             scrollTrigger: {
               trigger: event,
-              start: "top 95%",
-              end: "top 78%", // טווח קצר יותר — תנועה קטנה חושפת את הכרטיס מהר
-              scrub: 0.4
+              start: "top 92%",
+              end: "top 64%",
+              scrub: 0.6
             }
           }
         );
