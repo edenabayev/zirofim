@@ -311,12 +311,6 @@
     font-size: 5.5rem;
     line-height: 0.7;
     font-weight: 300;
-    -webkit-text-stroke: 1px currentColor;
-    color: transparent;
-    transition: color 0.6s ease;
-  }
-
-  .event-index.filled {
     color: currentColor;
   }
 
@@ -372,9 +366,6 @@
     /* ביטול אפקט ערימת הכרטיסים במובייל — גלילה רגילה וזורמת, בלי חיתוך תוכן */
     #intro-hero { position: relative; height: 100dvh; }
     #day-0 { position: relative; }
-
-    /* במובייל המתאר החלול עדין מדי — המספרים מלאים וקריאים תמיד */
-    .event-index { color: currentColor; }
 
     .day-section {
       padding-bottom: 12vh;
@@ -613,16 +604,6 @@
             }
           }
         );
-
-        // Stroke to Fill
-        const indexEl = event.querySelector('.event-index');
-        ScrollTrigger.create({
-          trigger: event,
-          start: "top 90%", // מתמלא מיד כשהכרטיס נכנס, לא באמצע המסך
-          end: "bottom 30%",
-          onEnter: () => indexEl.classList.add('filled'),
-          onLeaveBack: () => indexEl.classList.remove('filled')
-        });
       });
 
       // פרלקס לעומק מבוקר למניעת אכילת הכרטיסים מוקדם מדי
