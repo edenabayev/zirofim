@@ -373,6 +373,9 @@
     #intro-hero { position: relative; height: 100dvh; }
     #day-0 { position: relative; }
 
+    /* במובייל המתאר החלול עדין מדי — המספרים מלאים וקריאים תמיד */
+    .event-index { color: currentColor; }
+
     .day-section {
       padding-bottom: 12vh;
     }
@@ -615,7 +618,7 @@
         const indexEl = event.querySelector('.event-index');
         ScrollTrigger.create({
           trigger: event,
-          start: "top 50%", 
+          start: "top 90%", // מתמלא מיד כשהכרטיס נכנס, לא באמצע המסך
           end: "bottom 30%",
           onEnter: () => indexEl.classList.add('filled'),
           onLeaveBack: () => indexEl.classList.remove('filled')
